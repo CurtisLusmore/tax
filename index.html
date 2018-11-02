@@ -1,0 +1,113 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Tax Calculator</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 5vw;
+        }
+        form {
+            margin: 20vh auto 0 auto;
+            width: 600px;
+        }
+        table {
+            width: 100%;
+        }
+        td {
+            width: 50%;
+            margin: 0 0 1vh 0;
+            font-size: 3em;
+            border: none;
+        }
+        input[type='text'], select {
+            width: 100%;
+            border: none;
+            font-size: 1em;
+        }
+        @media screen and (max-width: 1080px) {
+            form { width: 100%; }
+        }
+    </style>
+    <script>
+        function updateForm(form) {
+            let income = parseInt(form.income.value.replace('$', '').replace(',',''));
+            if (isNaN(income)) income = 0;
+            form.income.value = '$' + income.toLocaleString();
+            if (form.super.value === 'incl') income /= 1.095;
+            let threshold, base, rate;
+            if (income <= 18200) {
+                threshold = 0;
+                base = 0;
+                rate = 0;
+            }
+            else if (income <= 37000) {
+                threshold = 18200;
+                base = 0;
+                rate = 0.19;
+            }
+            else if (income <= 90000) {
+                threshold = 37000;
+                base = 3572;
+                rate = 0.325;
+            }
+            else if (income <= 180000) {
+                threshold = 90000;
+                base = 20797;
+                rate = 0.37;
+            }
+            else {
+                threshold = 180000;
+                base = 54097;
+                rate = 0.45;
+            }
+
+            const excess = income - threshold;
+            const tax = excess * rate + base;
+            const takehome = income - tax;
+            form.tax.value = '$' + Math.round(tax).toLocaleString();
+            form.takehome.value = '$' + Math.round(takehome).toLocaleString();
+            form.monthly.value = '$' + Math.round(takehome / 12).toLocaleString();
+            form.fortnightly.value = '$' + Math.round(takehome / 26).toLocaleString();
+            form.weekly.value = '$' + Math.round(takehome / 52).toLocaleString();
+        }
+    </script>
+</head>
+<body>
+    <form onkeyup="updateForm(this);" onchange="updateForm(this);">
+        <table>
+            <tr>
+                <td>Salary</td>
+                <td><input name="income" type="text" placeholder="$100,000" autofocus /></td>
+            </tr>
+            <tr>
+                <td>Super</td>
+                <td><select name="super">
+                    <option value="excl">Excluded</option>
+                    <option value="incl">Included</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td>Tax</td>
+                <td><input name="tax" type="text" placeholder="$24,497" disabled /></td>
+            </tr>
+            <tr>
+                <td>Take home</td>
+                <td><input name="takehome" type="text" placeholder="$75,503" disabled /></td>
+            </tr>
+            <tr>
+                <td>Monthly</td>
+                <td><input name="monthly" type="text" placeholder="$6,292" disabled /></td>
+            </tr>
+            <tr>
+                <td>Fortnightly</td>
+                <td><input name="fortnightly" type="text" placeholder="$2,904" disabled /></td>
+            </tr>
+            <tr>
+                <td>Weekly</td>
+                <td><input name="weekly" type="text" placeholder="$1,452" disabled /></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
